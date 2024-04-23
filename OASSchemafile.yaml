@@ -1,6 +1,12 @@
 components:
   schemas:
     ExternalSchema:
+      RetrieveFlightRequest:
+          type: object
+          properties:
+            FlightSegment:
+              $ref: '#/components/schemas/FlightSegment'
+              description: The criteria being used to select the collection of Flights to return.
       TimezoneEnum:
         description: Timezone - UTC or local.
         type: string
