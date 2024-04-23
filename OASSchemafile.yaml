@@ -1,6 +1,6 @@
 components:
   schemas:
-    ExternalSchema:
+      
       type: object
       properties:       
         RetrieveFlightRequest:
@@ -15,12 +15,15 @@ components:
                 Timezone:
                   $ref: '#/components/schemas/TimezoneEnum'
                   description: Timezone of dates provided in request. If not entered, will default to local.
+
         TimezoneEnum:
           description: Timezone - UTC or local.
           type: string
           enum:
             - UTC
-            - LOCAL      
+            - LOCAL  
+components:
+  schemas:            
         FlightSegment:
           description: >
             A flight segment is a named origin and destination pair that identifies
@@ -29,7 +32,9 @@ components:
           oneOf:
             - $ref: '#/components/schemas/DepartureDate'
             - $ref: '#/components/schemas/ArrivalDate'
-        
+components:
+  schemas:
+              
         DepartureDate:
           type: object
           properties:
@@ -38,14 +43,18 @@ components:
               format: date
           required:
             - DepartureDate
-        
+components:
+  schemas:
+              
         ArrivalDate:
           type: object
           properties:
             ArrivalDate:
               type: string
               format: date
-                  
+ components:
+  schemas:
+                       
         Aircraft:
           type: object
           description: An Aircraft is a vehicle that is designed or used to transport people or cargo by air. It will be propelled by engines, has wings and must be capable of flight. IATA has defined the 3 letter aircraft type code for uniquely identifying the aircraft model e.g. "744" for Boeing 747-400. or similar
@@ -55,12 +64,18 @@ components:
               description: The code assigned by the interest group that defines this AircraftType from their viewpoint. Current version of the service supports IATA aircraft type. 3 letter code uniquely identifying the aircraft model e.g. "744" for Boeing 747-400. or similar
               minLength: 1
               maxLength: 10
+components:
+  schemas:
+                    
         AircraftForFlightLeg:
           type: object
           description: The specific combination of an individual Aircraft related to a single Flight Leg
           properties:
             aircraft:
               $ref: '#/components/schemas/Aircraft'
+components:
+  schemas:
+      
         Airport:
           type: object
           description: Basic container for all reference data associated with a particular Airport. Airport in the sense that it is defined by IATA - so we will only ever contain information associated with airport who have IATA codes and decodes (names). Names are provided to help consumers - the commonality being that not all consumers will be interested in the cryptic codes associated with a particular airport - so the decode logic is done centrally.
@@ -76,6 +91,9 @@ components:
               description: The decoded value for the airport code - helps for any human readable consumers
               minLength: 1
               maxLength: 100
+components:
+  schemas:
+      
         City:
           type: object
           description: Basic container for all reference data associated with a particular City. City in the sense that it is defined by IATA - so we will only ever contain information associated with cities who have IATA codes and decodes (names). Names are provided to help consumers - the commonality being that not all consumers will be interested in the cryptic codes associated with a particular city - so the decode logic is done centrally.
@@ -91,6 +109,9 @@ components:
               description: The decoded value for the city code - helps for any human readable consumers
               minLength: 1
               maxLength: 100
+components:
+  schemas:
+       
         Commentary:
           type: object
           description: Descriptive text as status of flightLeg changes to present to colleague/customer.
@@ -104,6 +125,9 @@ components:
               type: string
               format: date-time
               description: DateTime at which commentary was created.
+components:
+  schemas:
+                     
         Delay:
           type: object
           description: Where a flight does not depart as planned an instance of DatedLegDelay records this.
@@ -115,6 +139,9 @@ components:
               type: string
               format: date-time
               description: When the next update on the delay should be expected.
+components:
+  schemas:
+                     
         CustomerNotification:
           type: object
           description: Reason for disruption or delay to present to colleague/customer.
@@ -151,6 +178,9 @@ components:
                 maxLength: 50
               maxItems: 20
               description: Remark string.
+components:
+  schemas:
+                     
         Duration:
           type: object
           description: Encapsulates a measured number of units of time e.g. 55 minutes. A minus sign may optionally be used to prefix the measurement number. This provides requisite flexibility in situations where durations are stored relative to a specific time e.g. -55 minutes meaning before that time.
@@ -162,6 +192,9 @@ components:
               maximum: 9999
             unitOfTime:
               $ref: '#/components/schemas/UnitOfTimeEnum'
+components:
+  schemas:
+                     
         EventDate:
           type: object
           description: Event related dates and times. These may be specified as either UTC (Zulu) or as a local time - where local is appropriately specific to where the event occurs. For example flight departure times would be local to the Departure Airport whereas flight arrival times would be local to the Arrival Airport
@@ -174,6 +207,9 @@ components:
               type: string
               format: date-time
               description: The Date and time given as UTC (or Zulu)
+components:
+  schemas:
+                     
         LegStatus:
           type: object
           description: Flight states for the current flight leg
@@ -184,6 +220,9 @@ components:
             publicArrivalStatus:
               $ref: '#/components/schemas/publicArrivalStatusEnum'
               description: Arrival Status to be displayed to the public.
+components:
+  schemas:
+                     
         publicDepartureStatusEnum:
           type: string
           enum:
@@ -197,6 +236,9 @@ components:
             - DEPARTED_EARLY
             - DEPARTED_LATE
           description: Departure Status to be displayed to the public.
+components:
+  schemas:
+                 
         publicArrivalStatusEnum:
           type: string
           enum:
@@ -210,6 +252,9 @@ components:
             - ARRIVED_EARLY
             - ARRIVED_LATE
           description: Arrival Status to be displayed to the public.
+components:
+  schemas:
+                 
         MarketingFlightNumber:
           type: object
           description: A marketing flight number identifies a flight associated with a carrier for marketing purposes
@@ -218,7 +263,10 @@ components:
               $ref: '#/components/schemas/FlightNumber'
             exactMatch:
               type: boolean
-              description: True if FlightSegment is an exact match to the search criteria entered. 
+              description: True if FlightSegment is an exact match to the search criteria entered.
+components:
+  schemas:
+                     
         Movement:
           type: object
           description: A movement is information about an origin or destination related to a flight
@@ -265,10 +313,16 @@ components:
               format: date-time
               description: DateTime of diversion to this location from previous location.
               nullable: true
+components:
+  schemas:
+                     
         OperatingFlightNumber:
           allOf:
             - $ref: '#/components/schemas/FlightNumber'
           description: An operating flight number identifies a flight operated by a carrier
+components:
+  schemas:
+                 
         Organisation:
           type: object
           properties:
@@ -277,6 +331,9 @@ components:
               minLength: 1
               maxLength: 50
               description: Name of the organisation
+components:
+  schemas:
+                     
         RetrieveFlightResponse:
           type: object
           properties:
@@ -294,6 +351,9 @@ components:
           oneOf:
             - $ref: '#/components/schemas/Flight'
             - $ref: '#/components/schemas/BusinessErrors'
+components:
+  schemas:
+                   
         UnitOfTimeEnum:
           type: string
           enum:
@@ -301,6 +361,9 @@ components:
             - MINUTE
             - SECOND
           description: Enumerated unit of time names ranging from Second (base SI unit of Solar Time) through to derived Minute and Hour
+components:
+  schemas:
+                 
         Flight:
           type: object
           properties:
@@ -319,6 +382,9 @@ components:
                 $ref: '#/components/schemas/FlightLeg'
               maxItems: 99
               description: FlightLeg within the Flight
+components:
+  schemas:
+                     
         FlightLeg:
           type: object
           properties:
@@ -388,6 +454,9 @@ components:
             - currentOrigin
             - currentDestination
             - legTimings
+components:
+  schemas:
+                   
         FlightNumber:
           type: object
           properties:
@@ -419,6 +488,9 @@ components:
           required:
             - airlineCode
             - number
+components:
+  schemas:
+                   
         FlightTimings:
           type: object
           description: The timings of a flight (this may be a whole flight, segment, or leg) depending on the context of use. It covers the timings like Scheduled, Estimate, and Actual on Departure and Arrival.
@@ -441,6 +513,9 @@ components:
             actualArrivalDateTime:
               $ref: '#/components/schemas/EventDate'
               description: Actual arrival dateTime.
+components:
+  schemas:
+                     
         Gate:
           type: object
           description: Description of the physical location where passengers on a particular Flight Leg will be requested to board the aircraft.
@@ -456,6 +531,9 @@ components:
             gateStatusCode:
               $ref: '#/components/schemas/GateStatusCodeEnum'
               description: The IATA status code of the gate.
+components:
+  schemas:
+                     
         GateStatusEnum:
           type: string
           enum:
@@ -464,6 +542,9 @@ components:
             - FINAL_BOARDING
             - GATE_CLOSED
           description: The IATA status code of the gate.
+components:
+  schemas:
+                 
         GateStatusCodeEnum:
           type: string
           enum:
@@ -472,6 +553,9 @@ components:
             - BEN
             - GCL
           description: The IATA status code of the gate.
+components:
+  schemas:
+                 
         BusinessError:
           type: object
           properties:
@@ -505,6 +589,9 @@ components:
             Reason: Invalid input parameters
             UUID: 12345
             TimeStamp: "2024-04-23T12:00:00Z"
+components:
+  schemas:
+                   
         BusinessErrors:
           type: object
           properties:
@@ -515,6 +602,9 @@ components:
               description: Collection of BusinessError elements
           xml:
             name: BusinessErrors
+components:
+  schemas:
+                   
         SubError:
           type: object
           properties:
