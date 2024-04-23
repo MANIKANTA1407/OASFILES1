@@ -1,513 +1,513 @@
 components:
   schemas:
     ExternalSchema:
-      RetrieveFlightRequest:
+        RetrieveFlightRequest:
+            type: object
+            properties:
+              FlightSegment:
+                $ref: '#/components/schemas/FlightSegment'
+                description: The criteria being used to select the collection of Flights to return.
+            TimezoneEnum:
+              description: Timezone - UTC or local.
+              type: string
+              enum:
+                - UTC
+                - LOCAL
+            FlightSegment:
+              description: >
+                A flight segment is a named origin and destination pair that identifies
+                the board and off point of a passenger or cargo within a single flight
+                leg (with the same aircraft, flight number, and airline).
+              oneOf:
+                - $ref: '#/components/schemas/DepartureDate'
+                - $ref: '#/components/schemas/ArrivalDate'
+            DepartureDate:
+              type: object
+              properties:
+                DepartureDate:
+                  type: string
+                  format: date
+              required:
+                - DepartureDate
+            ArrivalDate:
+              type: object
+              properties:
+                ArrivalDate:
+                  type: string
+                  format: date
+            Aircraft:
+              type: object
+              description: An Aircraft is a vehicle that is designed or used to transport people or cargo by air. It will be propelled by engines, has wings and must be capable of flight. IATA has defined the 3 letter aircraft type code for uniquely identifying the aircraft model e.g. "744" for Boeing 747-400. or similar
+              properties:
+                aircraftType:
+                  type: string
+                  description: The code assigned by the interest group that defines this AircraftType from their viewpoint. Current version of the service supports IATA aircraft type. 3 letter code uniquely identifying the aircraft model e.g. "744" for Boeing 747-400. or similar
+                  minLength: 1
+                  maxLength: 10
+            AircraftForFlightLeg:
+              type: object
+              description: The specific combination of an individual Aircraft related to a single Flight Leg
+              properties:
+                aircraft:
+                  $ref: '#/components/schemas/Aircraft'
+            Airport:
+              type: object
+              description: Basic container for all reference data associated with a particular Airport. Airport in the sense that it is defined by IATA - so we will only ever contain information associated with airport who have IATA codes and decodes (names). Names are provided to help consumers - the commonality being that not all consumers will be interested in the cryptic codes associated with a particular airport - so the decode logic is done centrally.
+              properties:
+                airportCode:
+                  type: string
+                  description: The IATA code for an airport
+                  minLength: 3
+                  maxLength: 5
+                  pattern: '([A-Z]{3,5})'
+                airportName:
+                  type: string
+                  description: The decoded value for the airport code - helps for any human readable consumers
+                  minLength: 1
+                  maxLength: 100
+            City:
+              type: object
+              description: Basic container for all reference data associated with a particular City. City in the sense that it is defined by IATA - so we will only ever contain information associated with cities who have IATA codes and decodes (names). Names are provided to help consumers - the commonality being that not all consumers will be interested in the cryptic codes associated with a particular city - so the decode logic is done centrally.
+              properties:
+                cityCode:
+                  type: string
+                  description: The IATA code for a conurbation designated as located near to the airport
+                  minLength: 3
+                  maxLength: 5
+                  pattern: '([A-Z]{3,5})'
+                cityName:
+                  type: string
+                  description: The decoded value for the city code - helps for any human readable consumers
+                  minLength: 1
+                  maxLength: 100
+            Commentary:
+              type: object
+              description: Descriptive text as status of flightLeg changes to present to colleague/customer.
+              properties:
+                text:
+                  type: string
+                  description: Commentary string.
+                  minLength: 1
+                  maxLength: 500
+                updateDateTime:
+                  type: string
+                  format: date-time
+                  description: DateTime at which commentary was created.
+            Delay:
+              type: object
+              description: Where a flight does not depart as planned an instance of DatedLegDelay records this.
+              properties:
+                delayDuration:
+                  $ref: '#/components/schemas/Duration'
+                  description: Duration of the delay.
+                nextDelayInformation:
+                  type: string
+                  format: date-time
+                  description: When the next update on the delay should be expected.
+            CustomerNotification:
+              type: object
+              description: Reason for disruption or delay to present to colleague/customer.
+              properties:
+                text:
+                  type: string
+                  description: Remark string.
+                  minLength: 1
+                  maxLength: 500
+                summary:
+                  type: string
+                  description: Remark string.
+                  minLength: 1
+                  maxLength: 50
+                updateDateTime:
+                  type: string
+                  format: date-time
+                  description: DateTime at which reason was created.
+                translateableTextCode:
+                  type: string
+                  description: Remark string.
+                  minLength: 1
+                  maxLength: 10
+                translateableText:
+                  type: string
+                  description: Remark string.
+                  minLength: 1
+                  maxLength: 500
+                dynamicValue:
+                  type: array
+                  items:
+                    type: string
+                    minLength: 1
+                    maxLength: 50
+                  maxItems: 20
+                  description: Remark string.
+            Duration:
+              type: object
+              description: Encapsulates a measured number of units of time e.g. 55 minutes. A minus sign may optionally be used to prefix the measurement number. This provides requisite flexibility in situations where durations are stored relative to a specific time e.g. -55 minutes meaning before that time.
+              properties:
+                measure:
+                  type: integer
+                  description: Whole number (signed integer) of units of time e.g. 55. A minus sign prefix may also be stored, and it is used in situations where a duration is relative.
+                  minimum: -9999
+                  maximum: 9999
+                unitOfTime:
+                  $ref: '#/components/schemas/UnitOfTimeEnum'
+            EventDate:
+              type: object
+              description: Event related dates and times. These may be specified as either UTC (Zulu) or as a local time - where local is appropriately specific to where the event occurs. For example flight departure times would be local to the Departure Airport whereas flight arrival times would be local to the Arrival Airport
+              properties:
+                local:
+                  type: string
+                  format: date-time
+                  description: The Date and Time given as a local date. Local will always be based on the location where the event occurs. (i.e. arrival times will be local to the arrival airport, departure times will be local to the departure airport)
+                utc:
+                  type: string
+                  format: date-time
+                  description: The Date and time given as UTC (or Zulu)
+            LegStatus:
+              type: object
+              description: Flight states for the current flight leg
+              properties:
+                publicDepartureStatus:
+                  $ref: '#/components/schemas/publicDepartureStatusEnum'
+                  description: Departure Status to be displayed to the public.
+                publicArrivalStatus:
+                  $ref: '#/components/schemas/publicArrivalStatusEnum'
+                  description: Arrival Status to be displayed to the public.
+            publicDepartureStatusEnum:
+              type: string
+              enum:
+                - ON_TIME
+                - CANCELLED
+                - REROUTED
+                - NIGHT_STOPPED
+                - DELAYED
+                - DIVERTED
+                - DEPARTED
+                - DEPARTED_EARLY
+                - DEPARTED_LATE
+              description: Departure Status to be displayed to the public.
+            publicArrivalStatusEnum:
+              type: string
+              enum:
+                - ON_TIME
+                - CANCELLED
+                - REROUTED
+                - NIGHT_STOPPED
+                - DELAYED
+                - DIVERTED
+                - ARRIVED
+                - ARRIVED_EARLY
+                - ARRIVED_LATE
+              description: Arrival Status to be displayed to the public.
+            MarketingFlightNumber:
+              type: object
+              description: A marketing flight number identifies a flight associated with a carrier for marketing purposes
+              properties:
+                FlightNumber:
+                  $ref: '#/components/schemas/FlightNumber'
+                exactMatch:
+                  type: boolean
+                  description: True if FlightSegment is an exact match to the search criteria entered.
+            Movement:
+              type: object
+              description: A movement is information about an origin or destination related to a flight
+              properties:
+                sequenceNumber:
+                  type: integer
+                  description: Order of occurrence e.g. 1-n.
+                  nullable: true
+                airport:
+                  $ref: '#/components/schemas/Airport'
+                  description: The details of the airport associated with this particular Movement
+                city:
+                  $ref: '#/components/schemas/City'
+                  description: The details of the city associated with this particular movement.
+                  nullable: true
+                localDateTime:
+                  type: string
+                  format: date-time
+                  description: Current DateTime at location (including timezone offset).
+                  nullable: true
+                stopoverDuration:
+                  $ref: '#/components/schemas/Duration'
+                  description: Duration of the stopover (applicable only for multi leg flights).
+                  nullable: true
+                passengerTerminal:
+                  type: string
+                  description: Identifier for the building within the airport for embarking/disembarking passengers or crew.
+                  minLength: 1
+                  maxLength: 10
+                  nullable: true
+                gate:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Gate'
+                  description: The identifier of a physical location within a terminal building where the transfer of passengers to and from the aircraft takes place
+                  maxItems: 3
+                  nullable: true
+                delay:
+                  $ref: '#/components/schemas/Delay'
+                  description: Delay information at the origin/destination.
+                  nullable: true
+                diversionDateTime:
+                  type: string
+                  format: date-time
+                  description: DateTime of diversion to this location from previous location.
+                  nullable: true
+            OperatingFlightNumber:
+              allOf:
+                - $ref: '#/components/schemas/FlightNumber'
+              description: An operating flight number identifies a flight operated by a carrier
+            Organisation:
           type: object
           properties:
-            FlightSegment:
-              $ref: '#/components/schemas/FlightSegment'
-              description: The criteria being used to select the collection of Flights to return.
-      TimezoneEnum:
-        description: Timezone - UTC or local.
-        type: string
-        enum:
-          - UTC
-          - LOCAL
-      FlightSegment:
-        description: >
-          A flight segment is a named origin and destination pair that identifies
-          the board and off point of a passenger or cargo within a single flight
-          leg (with the same aircraft, flight number, and airline).
-        oneOf:
-          - $ref: '#/components/schemas/DepartureDate'
-          - $ref: '#/components/schemas/ArrivalDate'
-      DepartureDate:
-        type: object
-        properties:
-          DepartureDate:
-            type: string
-            format: date
-        required:
-          - DepartureDate
-      ArrivalDate:
-        type: object
-        properties:
-          ArrivalDate:
-            type: string
-            format: date
-      Aircraft:
-        type: object
-        description: An Aircraft is a vehicle that is designed or used to transport people or cargo by air. It will be propelled by engines, has wings and must be capable of flight. IATA has defined the 3 letter aircraft type code for uniquely identifying the aircraft model e.g. "744" for Boeing 747-400. or similar
-        properties:
-          aircraftType:
-            type: string
-            description: The code assigned by the interest group that defines this AircraftType from their viewpoint. Current version of the service supports IATA aircraft type. 3 letter code uniquely identifying the aircraft model e.g. "744" for Boeing 747-400. or similar
-            minLength: 1
-            maxLength: 10
-      AircraftForFlightLeg:
-        type: object
-        description: The specific combination of an individual Aircraft related to a single Flight Leg
-        properties:
-          aircraft:
-            $ref: '#/components/schemas/Aircraft'
-      Airport:
-        type: object
-        description: Basic container for all reference data associated with a particular Airport. Airport in the sense that it is defined by IATA - so we will only ever contain information associated with airport who have IATA codes and decodes (names). Names are provided to help consumers - the commonality being that not all consumers will be interested in the cryptic codes associated with a particular airport - so the decode logic is done centrally.
-        properties:
-          airportCode:
-            type: string
-            description: The IATA code for an airport
-            minLength: 3
-            maxLength: 5
-            pattern: '([A-Z]{3,5})'
-          airportName:
-            type: string
-            description: The decoded value for the airport code - helps for any human readable consumers
-            minLength: 1
-            maxLength: 100
-      City:
-        type: object
-        description: Basic container for all reference data associated with a particular City. City in the sense that it is defined by IATA - so we will only ever contain information associated with cities who have IATA codes and decodes (names). Names are provided to help consumers - the commonality being that not all consumers will be interested in the cryptic codes associated with a particular city - so the decode logic is done centrally.
-        properties:
-          cityCode:
-            type: string
-            description: The IATA code for a conurbation designated as located near to the airport
-            minLength: 3
-            maxLength: 5
-            pattern: '([A-Z]{3,5})'
-          cityName:
-            type: string
-            description: The decoded value for the city code - helps for any human readable consumers
-            minLength: 1
-            maxLength: 100
-      Commentary:
-        type: object
-        description: Descriptive text as status of flightLeg changes to present to colleague/customer.
-        properties:
-          text:
-            type: string
-            description: Commentary string.
-            minLength: 1
-            maxLength: 500
-          updateDateTime:
-            type: string
-            format: date-time
-            description: DateTime at which commentary was created.
-      Delay:
-        type: object
-        description: Where a flight does not depart as planned an instance of DatedLegDelay records this.
-        properties:
-          delayDuration:
-            $ref: '#/components/schemas/Duration'
-            description: Duration of the delay.
-          nextDelayInformation:
-            type: string
-            format: date-time
-            description: When the next update on the delay should be expected.
-      CustomerNotification:
-        type: object
-        description: Reason for disruption or delay to present to colleague/customer.
-        properties:
-          text:
-            type: string
-            description: Remark string.
-            minLength: 1
-            maxLength: 500
-          summary:
-            type: string
-            description: Remark string.
-            minLength: 1
-            maxLength: 50
-          updateDateTime:
-            type: string
-            format: date-time
-            description: DateTime at which reason was created.
-          translateableTextCode:
-            type: string
-            description: Remark string.
-            minLength: 1
-            maxLength: 10
-          translateableText:
-            type: string
-            description: Remark string.
-            minLength: 1
-            maxLength: 500
-          dynamicValue:
-            type: array
-            items:
+            name:
               type: string
               minLength: 1
               maxLength: 50
-            maxItems: 20
-            description: Remark string.
-      Duration:
-        type: object
-        description: Encapsulates a measured number of units of time e.g. 55 minutes. A minus sign may optionally be used to prefix the measurement number. This provides requisite flexibility in situations where durations are stored relative to a specific time e.g. -55 minutes meaning before that time.
-        properties:
-          measure:
-            type: integer
-            description: Whole number (signed integer) of units of time e.g. 55. A minus sign prefix may also be stored, and it is used in situations where a duration is relative.
-            minimum: -9999
-            maximum: 9999
-          unitOfTime:
-            $ref: '#/components/schemas/UnitOfTimeEnum'
-      EventDate:
-        type: object
-        description: Event related dates and times. These may be specified as either UTC (Zulu) or as a local time - where local is appropriately specific to where the event occurs. For example flight departure times would be local to the Departure Airport whereas flight arrival times would be local to the Arrival Airport
-        properties:
-          local:
-            type: string
-            format: date-time
-            description: The Date and Time given as a local date. Local will always be based on the location where the event occurs. (i.e. arrival times will be local to the arrival airport, departure times will be local to the departure airport)
-          utc:
-            type: string
-            format: date-time
-            description: The Date and time given as UTC (or Zulu)
-      LegStatus:
-        type: object
-        description: Flight states for the current flight leg
-        properties:
-          publicDepartureStatus:
-            $ref: '#/components/schemas/publicDepartureStatusEnum'
-            description: Departure Status to be displayed to the public.
-          publicArrivalStatus:
-            $ref: '#/components/schemas/publicArrivalStatusEnum'
-            description: Arrival Status to be displayed to the public.
-      publicDepartureStatusEnum:
-        type: string
-        enum:
-          - ON_TIME
-          - CANCELLED
-          - REROUTED
-          - NIGHT_STOPPED
-          - DELAYED
-          - DIVERTED
-          - DEPARTED
-          - DEPARTED_EARLY
-          - DEPARTED_LATE
-        description: Departure Status to be displayed to the public.
-      publicArrivalStatusEnum:
-        type: string
-        enum:
-          - ON_TIME
-          - CANCELLED
-          - REROUTED
-          - NIGHT_STOPPED
-          - DELAYED
-          - DIVERTED
-          - ARRIVED
-          - ARRIVED_EARLY
-          - ARRIVED_LATE
-        description: Arrival Status to be displayed to the public.
-      MarketingFlightNumber:
-        type: object
-        description: A marketing flight number identifies a flight associated with a carrier for marketing purposes
-        properties:
-          FlightNumber:
-            $ref: '#/components/schemas/FlightNumber'
-          exactMatch:
-            type: boolean
-            description: True if FlightSegment is an exact match to the search criteria entered.
-      Movement:
-        type: object
-        description: A movement is information about an origin or destination related to a flight
-        properties:
-          sequenceNumber:
-            type: integer
-            description: Order of occurrence e.g. 1-n.
-            nullable: true
-          airport:
-            $ref: '#/components/schemas/Airport'
-            description: The details of the airport associated with this particular Movement
-          city:
-            $ref: '#/components/schemas/City'
-            description: The details of the city associated with this particular movement.
-            nullable: true
-          localDateTime:
-            type: string
-            format: date-time
-            description: Current DateTime at location (including timezone offset).
-            nullable: true
-          stopoverDuration:
-            $ref: '#/components/schemas/Duration'
-            description: Duration of the stopover (applicable only for multi leg flights).
-            nullable: true
-          passengerTerminal:
-            type: string
-            description: Identifier for the building within the airport for embarking/disembarking passengers or crew.
-            minLength: 1
-            maxLength: 10
-            nullable: true
-          gate:
-            type: array
-            items:
-              $ref: '#/components/schemas/Gate'
-            description: The identifier of a physical location within a terminal building where the transfer of passengers to and from the aircraft takes place
-            maxItems: 3
-            nullable: true
-          delay:
-            $ref: '#/components/schemas/Delay'
-            description: Delay information at the origin/destination.
-            nullable: true
-          diversionDateTime:
-            type: string
-            format: date-time
-            description: DateTime of diversion to this location from previous location.
-            nullable: true
-      OperatingFlightNumber:
-        allOf:
-          - $ref: '#/components/schemas/FlightNumber'
-        description: An operating flight number identifies a flight operated by a carrier
-      Organisation:
-        type: object
-        properties:
-          name:
-            type: string
-            minLength: 1
-            maxLength: 50
-            description: Name of the organisation
-      RetrieveFlightResponse:
-        type: object
-        properties:
-          flight:
-            type: array
-            items:
-              $ref: '#/components/schemas/Flight'
-            minItems: 1
-            maxItems: 5000
-            description: Flights matching the request criteria.
-          BusinessErrors:
-            $ref: '#/components/schemas/BusinessErrors'
-            description: Flights matching the request criteria.
-        description: Response to a search for Flights.
-        oneOf:
-          - $ref: '#/components/schemas/Flight'
-          - $ref: '#/components/schemas/BusinessErrors'
-      UnitOfTimeEnum:
-        type: string
-        enum:
-          - HOUR
-          - MINUTE
-          - SECOND
-        description: Enumerated unit of time names ranging from Second (base SI unit of Solar Time) through to derived Minute and Hour
-      Flight:
-        type: object
-        properties:
-          operatingFlightNumber:
-            $ref: '#/components/schemas/OperatingFlightNumber'
-            description: >
-              Airline whose code is applied to the Operating Flight Number for the Flight, also known as prime flight number. May be referred to as administering carrier.
-          originDate:
-            type: string
-            format: date
-            description: >
-              Scheduled date of departure from the initial station in the Flight - used to differentiate between different Flights with the same Flight number e.g. originally scheduled on consecutive days.
-          flightLeg:
-            type: array
-            items:
-              $ref: '#/components/schemas/FlightLeg'
-            maxItems: 99
-            description: FlightLeg within the Flight
-      FlightLeg:
-        type: object
-        properties:
-          ownershipDisclosure:
-            type: string
-            minLength: 1
-            maxLength: 100
-            description: >
-              Legal disclosure of the carrier name based on the Operating Carrier, Schedule Owner and Aircraft Owner for the Flight Leg. This is mainly used differentiate the Franchise/Subsidiary who is owning the schedule, but uses a leased aircraft. For the example of CJ flight operated by T3, this field will have "BA City Flyer (Eastern Airways)"
-          currentOrigin:
-            $ref: '#/components/schemas/Movement'
-            description: Details of the origin of this leg
-          currentDestination:
-            $ref: '#/components/schemas/Movement'
-            description: Details of the destination of this leg
-          legTimings:
-            $ref: '#/components/schemas/FlightTimings'
-            description: >
-              This covers the timings like Scheduled, Estimate and Actual on Departure and Arrival.
-          legStatus:
-            $ref: '#/components/schemas/LegStatus'
-            description: Statuses associated with the FlightLeg - includes departure, arrival, general etc.
-          disruptionReason:
-            $ref: '#/components/schemas/CustomerNotification'
-            description: Reason for disruption to be presented to colleagues/customers.
-          callToAction:
-            $ref: '#/components/schemas/CustomerNotification'
-            description: Recommended action to present to customers.
-          commentary:
-            $ref: '#/components/schemas/Commentary'
-            description: Commentary to provide to customers describing changes made to DatedLeg.
-          marketingFlight:
-            type: array
-            items:
-              $ref: '#/components/schemas/MarketingFlightNumber'
-            maxItems: 99
-            description: FlightSegments marketing the FlightLeg.
-          aircraftForFlightLeg:
-            $ref: '#/components/schemas/AircraftForFlightLeg'
-            description: Aircraft operating the FlightLeg.
-          exactMatch:
-            type: boolean
-            description: >
-              True if FlightLeg is an exact match to the search criteria entered.
-          origin:
-            type: array
-            items:
-              $ref: '#/components/schemas/Movement'
-            maxItems: 99
-            description: >
-              Details of the origin history of this leg. This element is not used currently as the origin changes will be considered as a new flight leg.
-          destination:
-            type: array
-            items:
-              $ref: '#/components/schemas/Movement'
-            maxItems: 99
-            description: >
-              Details of the destination history of this leg. This section will have the list of arrival airport that the flight was intended to fly. This would be populated in case of diversion and reroute which is affecting the destination airport.
-          legDuration:
-            $ref: '#/components/schemas/Duration'
-            description: Duration of the leg.
-          updateDateTime:
-            type: string
-            format: date-time
-            description: DateTime information on FlightLeg last updated.
-        required:
-          - currentOrigin
-          - currentDestination
-          - legTimings
-      FlightNumber:
-        type: object
-        properties:
-          airlineCode:
-            type: string
-            minLength: 2
-            maxLength: 3
-            pattern: '([A-Z0-9]{2,3})'
-            description: >
-              The IATA standard 2 or 3 character Marketing Carrier Code or Operating Carrier Code of the flight.
-          flightsuffix:
-            type: string
-            pattern: '([A-Z]{1})'
-            description: >
-              A suffix that is added to the original flight number when the flight is delayed into the next calendar day or when it is a special type of flight e.g. positioning flight.
-          number:
-            type: string
-            minLength: 1
-            maxLength: 4
-            pattern: '([0-9]{1,4})'
-            description: >
-              Flight Number is a numerical designator that uniquely identifies a specific flight within an airline schedule (Note: In combination with the airline/carrier code this will uniquely identify a flight across airlines). E.g.-175 (BA175/BA0175), 9 (BA9/BA009)
-          airlineName:
-            type: string
-            minLength: 1
-            maxLength: 50
-            description: >
-              Airline associated with FlightNumber (operating or marketing)
-        required:
-          - airlineCode
-          - number
-      FlightTimings:
-        type: object
-        description: The timings of a flight (this may be a whole flight, segment, or leg) depending on the context of use. It covers the timings like Scheduled, Estimate, and Actual on Departure and Arrival.
-        properties:
-          scheduledDepartureDateTime:
-            $ref: '#/components/schemas/EventDate'
-            description: Scheduled departure dateTime.
-          scheduledArrivalDateTime:
-            $ref: '#/components/schemas/EventDate'
-            description: Scheduled arrival dateTime.
-          estimatedDepartureDateTime:
-            $ref: '#/components/schemas/EventDate'
-            description: Datetime departure estimated.
-          estimatedArrivalDateTime:
-            $ref: '#/components/schemas/EventDate'
-            description: Datetime arrival estimated.
-          actualDepartureDateTime:
-            $ref: '#/components/schemas/EventDate'
-            description: Actual departure dateTime.
-          actualArrivalDateTime:
-            $ref: '#/components/schemas/EventDate'
-            description: Actual arrival dateTime.
-      Gate:
-        type: object
-        description: Description of the physical location where passengers on a particular Flight Leg will be requested to board the aircraft.
-        properties:
-          gateNumber:
-            type: string
-            minLength: 1
-            maxLength: 10
-            description: The identifier of a physical location within a terminal building where the transfer of passengers to and from the aircraft takes place.
-          gateStatus:
-            $ref: '#/components/schemas/GateStatusEnum'
-            description: The IATA status of the gate.
-          gateStatusCode:
-            $ref: '#/components/schemas/GateStatusCodeEnum'
-            description: The IATA status code of the gate.
-      GateStatusEnum:
-        type: string
-        enum:
-          - GATE_OPEN
-          - BOARDING
-          - FINAL_BOARDING
-          - GATE_CLOSED
-        description: The IATA status code of the gate.
-      GateStatusCodeEnum:
-        type: string
-        enum:
-          - GTO
-          - BST
-          - BEN
-          - GCL
-        description: The IATA status code of the gate.
-      BusinessError:
-        type: object
-        properties:
-          Code:
-            type: string
-            minLength: 1
-            maxLength: 16
-            description: The unique code associated with the error, e.g. FLSC_9001
-          Reason:
-            type: string
-            minLength: 1
-            maxLength: 250
-            description: Textual description of the underlying reason for the occurrence of this error
-          UUID:
-            type: string
-            minLength: 1
-            maxLength: 50
-            description: The unique identifier associated with this instance of the error
-          SubError:
-            type: array
-            items:
-              $ref: '#/components/schemas/SubError'
-            description: Container for an optional list of errors within this overarching error that provide more detailed information about what went wrong
-        required:
-          - Code
-          - Reason
-          - UUID
-      BusinessErrors:
-        type: array
-        items:
-          $ref: '#/components/schemas/BusinessError'
-        description: A collection of business errors associated with the response
-      SubError:
-        type: object
-        properties:
-          Code:
-            type: string
-            minLength: 1
-            maxLength: 16
-            description: The unique code associated with the error, e.g. FLSC_9001
-          Reason:
-            type: string
-            minLength: 1
-            maxLength: 250
-            description: Textual description of the underlying reason for the occurrence of this error
-          UUID:
-            type: string
-            minLength: 1
-            maxLength: 50
-            description: The unique identifier associated with this instance of the error
+              description: Name of the organisation
+        RetrieveFlightResponse:
+          type: object
+          properties:
+            flight:
+              type: array
+              items:
+                $ref: '#/components/schemas/Flight'
+              minItems: 1
+              maxItems: 5000
+              description: Flights matching the request criteria.
+            BusinessErrors:
+              $ref: '#/components/schemas/BusinessErrors'
+              description: Flights matching the request criteria.
+          description: Response to a search for Flights.
+          oneOf:
+            - $ref: '#/components/schemas/Flight'
+            - $ref: '#/components/schemas/BusinessErrors'
+            UnitOfTimeEnum:
+              type: string
+              enum:
+                - HOUR
+                - MINUTE
+                - SECOND
+              description: Enumerated unit of time names ranging from Second (base SI unit of Solar Time) through to derived Minute and Hour
+            Flight:
+              type: object
+              properties:
+                operatingFlightNumber:
+                  $ref: '#/components/schemas/OperatingFlightNumber'
+                  description: >
+                    Airline whose code is applied to the Operating Flight Number for the Flight, also known as prime flight number. May be referred to as administering carrier.
+                originDate:
+                  type: string
+                  format: date
+                  description: >
+                    Scheduled date of departure from the initial station in the Flight - used to differentiate between different Flights with the same Flight number e.g. originally scheduled on consecutive days.
+                flightLeg:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/FlightLeg'
+                  maxItems: 99
+                  description: FlightLeg within the Flight
+            FlightLeg:
+              type: object
+              properties:
+                ownershipDisclosure:
+                  type: string
+                  minLength: 1
+                  maxLength: 100
+                  description: >
+                    Legal disclosure of the carrier name based on the Operating Carrier, Schedule Owner and Aircraft Owner for the Flight Leg. This is mainly used differentiate the Franchise/Subsidiary who is owning the schedule, but uses a leased aircraft. For the example of CJ flight operated by T3, this field will have "BA City Flyer (Eastern Airways)"
+                currentOrigin:
+                  $ref: '#/components/schemas/Movement'
+                  description: Details of the origin of this leg
+                currentDestination:
+                  $ref: '#/components/schemas/Movement'
+                  description: Details of the destination of this leg
+                legTimings:
+                  $ref: '#/components/schemas/FlightTimings'
+                  description: >
+                    This covers the timings like Scheduled, Estimate and Actual on Departure and Arrival.
+                legStatus:
+                  $ref: '#/components/schemas/LegStatus'
+                  description: Statuses associated with the FlightLeg - includes departure, arrival, general etc.
+                disruptionReason:
+                  $ref: '#/components/schemas/CustomerNotification'
+                  description: Reason for disruption to be presented to colleagues/customers.
+                callToAction:
+                  $ref: '#/components/schemas/CustomerNotification'
+                  description: Recommended action to present to customers.
+                commentary:
+                  $ref: '#/components/schemas/Commentary'
+                  description: Commentary to provide to customers describing changes made to DatedLeg.
+                marketingFlight:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/MarketingFlightNumber'
+                  maxItems: 99
+                  description: FlightSegments marketing the FlightLeg.
+                aircraftForFlightLeg:
+                  $ref: '#/components/schemas/AircraftForFlightLeg'
+                  description: Aircraft operating the FlightLeg.
+                exactMatch:
+                  type: boolean
+                  description: >
+                    True if FlightLeg is an exact match to the search criteria entered.
+                origin:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Movement'
+                  maxItems: 99
+                  description: >
+                    Details of the origin history of this leg. This element is not used currently as the origin changes will be considered as a new flight leg.
+                destination:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Movement'
+                  maxItems: 99
+                  description: >
+                    Details of the destination history of this leg. This section will have the list of arrival airport that the flight was intended to fly. This would be populated in case of diversion and reroute which is affecting the destination airport.
+                legDuration:
+                  $ref: '#/components/schemas/Duration'
+                  description: Duration of the leg.
+                updateDateTime:
+                  type: string
+                  format: date-time
+                  description: DateTime information on FlightLeg last updated.
+              required:
+                - currentOrigin
+                - currentDestination
+                - legTimings
+            FlightNumber:
+              type: object
+              properties:
+                airlineCode:
+                  type: string
+                  minLength: 2
+                  maxLength: 3
+                  pattern: '([A-Z0-9]{2,3})'
+                  description: >
+                    The IATA standard 2 or 3 character Marketing Carrier Code or Operating Carrier Code of the flight.
+                flightsuffix:
+                  type: string
+                  pattern: '([A-Z]{1})'
+                  description: >
+                    A suffix that is added to the original flight number when the flight is delayed into the next calendar day or when it is a special type of flight e.g. positioning flight.
+                number:
+                  type: string
+                  minLength: 1
+                  maxLength: 4
+                  pattern: '([0-9]{1,4})'
+                  description: >
+                    Flight Number is a numerical designator that uniquely identifies a specific flight within an airline schedule (Note: In combination with the airline/carrier code this will uniquely identify a flight across airlines). E.g.-175 (BA175/BA0175), 9 (BA9/BA009)
+                airlineName:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                  description: >
+                    Airline associated with FlightNumber (operating or marketing)
+              required:
+                - airlineCode
+                - number
+            FlightTimings:
+              type: object
+              description: The timings of a flight (this may be a whole flight, segment, or leg) depending on the context of use. It covers the timings like Scheduled, Estimate, and Actual on Departure and Arrival.
+              properties:
+                scheduledDepartureDateTime:
+                  $ref: '#/components/schemas/EventDate'
+                  description: Scheduled departure dateTime.
+                scheduledArrivalDateTime:
+                  $ref: '#/components/schemas/EventDate'
+                  description: Scheduled arrival dateTime.
+                estimatedDepartureDateTime:
+                  $ref: '#/components/schemas/EventDate'
+                  description: Datetime departure estimated.
+                estimatedArrivalDateTime:
+                  $ref: '#/components/schemas/EventDate'
+                  description: Datetime arrival estimated.
+                actualDepartureDateTime:
+                  $ref: '#/components/schemas/EventDate'
+                  description: Actual departure dateTime.
+                actualArrivalDateTime:
+                  $ref: '#/components/schemas/EventDate'
+                  description: Actual arrival dateTime.
+            Gate:
+              type: object
+              description: Description of the physical location where passengers on a particular Flight Leg will be requested to board the aircraft.
+              properties:
+                gateNumber:
+                  type: string
+                  minLength: 1
+                  maxLength: 10
+                  description: The identifier of a physical location within a terminal building where the transfer of passengers to and from the aircraft takes place.
+                gateStatus:
+                  $ref: '#/components/schemas/GateStatusEnum'
+                  description: The IATA status of the gate.
+                gateStatusCode:
+                  $ref: '#/components/schemas/GateStatusCodeEnum'
+                  description: The IATA status code of the gate.
+            GateStatusEnum:
+              type: string
+              enum:
+                - GATE_OPEN
+                - BOARDING
+                - FINAL_BOARDING
+                - GATE_CLOSED
+              description: The IATA status code of the gate.
+            GateStatusCodeEnum:
+              type: string
+              enum:
+                - GTO
+                - BST
+                - BEN
+                - GCL
+              description: The IATA status code of the gate.
+            BusinessError:
+              type: object
+              properties:
+                Code:
+                  type: string
+                  minLength: 1
+                  maxLength: 16
+                  description: The unique code associated with the error, e.g. FLSC_9001
+                Reason:
+                  type: string
+                  minLength: 1
+                  maxLength: 250
+                  description: Textual description of the underlying reason for the occurrence of this error
+                UUID:
+                  type: string
+                  minLength: 1
+                  maxLength: 50
+                  description: The unique identifier associated with this instance of the error
+                SubError:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/SubError'
+                  description: Container for an optional list of errors within this overarching error that provide more detailed information about what went wrong
+              required:
+                - Code
+                - Reason
+                - UUID
+            BusinessErrors:
+              type: array
+              items:
+                $ref: '#/components/schemas/BusinessError'
+              description: A collection of business errors associated with the response
+            SubError:
+          type: object
+          properties:
+            Code:
+              type: string
+              minLength: 1
+              maxLength: 16
+              description: The unique code associated with the error, e.g. FLSC_9001
+            Reason:
+              type: string
+              minLength: 1
+              maxLength: 250
+              description: Textual description of the underlying reason for the occurrence of this error
+            UUID:
+              type: string
+              minLength: 1
+              maxLength: 50
+              description: The unique identifier associated with this instance of the error
