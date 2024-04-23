@@ -1,4 +1,9 @@
-RetrieveFlightRequest:
+components:
+  schemas:
+    ExternalSchema:
+      type: object
+      properties:
+      RetrieveFlightRequest:
       type: object
       properties:
         FlightSegment:
