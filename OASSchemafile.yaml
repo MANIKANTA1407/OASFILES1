@@ -1,7 +1,6 @@
 components:
   schemas:
       
-      type: object
       properties:       
         RetrieveFlightRequest:
               type: object
