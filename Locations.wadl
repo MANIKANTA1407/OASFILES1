@@ -1,0 +1,65 @@
+<application xmlns="http://wadl.dev.java.net/2009/02" xmlns:prefix1="http://www.mk.com/schema/loc/RetrieveContainedLocationsResponseV01" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<grammars>
+		<xs:schema attributeFormDefault="unqualified" elementFormDefault="unqualified" targetNamespace="http://www.mk.com/schema/loc/RetrieveContainedLocationsResponseV01" xmlns:tns="http://www.mk.com/schema/loc/RetrieveContainedLocationsResponseV01" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+			<xs:element name="RetrieveContainedLocationsResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element maxOccurs="unbounded" name="LocationDetails" type="tns:Location"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:complexType name="Location">
+				<xs:sequence>
+					<xs:element name="Type" type="xs:string"/>
+					<xs:element name="Name" type="xs:string"/>
+					<xs:element minOccurs="0" name="Code" type="xs:string"/>
+				</xs:sequence>
+			</xs:complexType>
+		</xs:schema>
+	</grammars>
+	<resources mkse="http://caws07-e2e01.mkplc.com:80/rdu-loc/rs/v2/">
+		<resource path="/countrydiallingcodes">
+			<method name="GET">
+				<response>
+					<representation mediaType="application/json"/>
+				</response>
+			</method>
+		</resource>
+		<resource path="/servicedairports">
+			<method name="GET">
+				<response>
+					<representation mediaType="application/json"/>
+				</response>
+			</method>
+			<resource path="/{iatacode}">
+				<param name="iatacode" style="template" type="xs:string"/>
+				<method name="GET">
+					<request/>
+					<response>
+						<representation mediaType="application/json"/>
+					</response>
+				</method>
+			</resource>
+		</resource>
+		<resource path="/countries">
+			<resource path="/{id}/states">
+				<param name="id" style="template" type="xs:string"/>
+				<param name="parentLocationType" style="matrix" type="xs:string"/>
+				<param name="requestedLocationType" style="matrix" type="xs:string"/>
+				<method name="GET">
+					<request/>
+					<response>
+						<representation element="prefix1:RetrieveContainedLocationsResponse" mediaType="application/json"/>
+					</response>
+				</method>
+			</resource>
+		</resource>
+	    <resource path="/servicedlocations">
+			<method name="GET">
+				<response>
+					<representation mediaType="application/json"/>
+				</response>
+			</method>
+		</resource>
+	</resources>
+</application>
